@@ -1,12 +1,19 @@
-import { createElement, useState } from 'react';
-
-const Display = props => <div>{props.value}</div>;
+import { useState } from 'react';
 
 const Button = (props) => (
   <button onClick={props.handleClick}>
     {props.text}
   </button>
 );
+
+const StatisticLine = ({text, value}) => {
+  return (
+    <>
+      <br/>
+      {text + ':' + value}
+    </>
+  );
+};
 
 const Statistics = ({good, neutral, bad}) => {
 
@@ -18,19 +25,12 @@ const Statistics = ({good, neutral, bad}) => {
     return (
       <>
         <h1>Statistics</h1>
-        <p>
-          Good: {good}
-          <br/>
-          Neutral: {neutral}
-          <br/>
-          Bad: {bad}
-          <br/>
-          All: {all}
-          <br/>
-          Average: {average}
-          <br/>
-          Positive percentage: {positive}%
-        </p>
+        <StatisticLine text="Good" value={good}/>
+        <StatisticLine text="Neutral" value={neutral}/>
+        <StatisticLine text="Bad" value={bad}/>
+        <StatisticLine text="All" value={all}/>
+        <StatisticLine text="Average" value={average}/>
+        <StatisticLine text="Positive percentage" value={positive}/>
       </>
     );
   else

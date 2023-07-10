@@ -1,31 +1,31 @@
 const Header = (props) => {
-  console.log(props)
-  return <h1>{props.course.name}</h1>
-}
+  console.log(props);
+  return <h1>{props.course.name}</h1>;
+};
 
 const Content = (props) => {
-  console.log(props)
+  console.log(props);
   return (
     <>
       <Part part={props.course.parts[0]} />
       <Part part={props.course.parts[1]} />
       <Part part={props.course.parts[2]} />
     </>    
-  )
-}
+  );
+};
 
 const Part = (props) => {
-  console.log(props)
-  return <p>{props.part.name} {props.part.exercises}</p>
-}
+  console.log(props);
+  return <p>{props.part.name} {props.part.exercises}</p>;
+};
 
 const Total = (props) => {
-  console.log(props)
+  console.log(props);
   return (
     <p>Number of exercises {props.course.parts[0].exercises
       + props.course.parts[1].exercises + props.course.parts[2].exercises}</p>
-  )
-}
+  );
+};
 
 const App = () => {
 
@@ -45,7 +45,7 @@ const App = () => {
         exercises: 14
       }
     ]
-  }
+  };
 
   return (
     <>
@@ -53,7 +53,7 @@ const App = () => {
       <Content course={course} />
       <Total course={course} />
     </>
-  )
-}
+  );
+};
 
-export default App
+export default App;

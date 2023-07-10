@@ -3,3 +3,4 @@
 /*/*/.gitignore
 /part1/unicafe/public/
 /*/*/vite.config.js
+/*/*/package-lock.json

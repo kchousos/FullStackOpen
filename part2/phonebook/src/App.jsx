@@ -11,6 +11,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('');
   const [newSearch, setNewSearch] = useState('');
   const [notificationMessage, setNotificationMessage] = useState(null);
+  const [notificationStatus, setNotificationStatus] = useState(false);
 
   const refreshPhonebook = () => {
     personService
@@ -51,6 +52,14 @@ const App = () => {
       if (window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
         personService
           .update(persons.filter(p => p.name === newName)[0].id, newPerson)
+          .catch(() => {
+            setNotificationStatus(true)
+            setNotificationMessage(`Information of ${newName} has already been removed from server`)
+            setTimeout(() => {
+              setNotificationMessage(null)
+              setNotificationStatus(false)
+            }, 5000)
+          })
         refreshPhonebook()
       }
       setNewName('');
@@ -86,7 +95,9 @@ const App = () => {
     <>
       <h2>Phonebook</h2>
 
-      <Notification message={notificationMessage} />
+      <Notification
+        message={notificationMessage}
+        notificationStatus={notificationStatus} />
 
       <Filter
         newSearch={newSearch}

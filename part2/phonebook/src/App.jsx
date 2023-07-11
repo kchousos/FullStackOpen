@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
@@ -11,20 +10,21 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('');
   const [newSearch, setNewSearch] = useState('');
 
-  useEffect(() => {
+  const refreshPhonebook = () => {
     personService
       .getAll()
       .then(initialPersons => {
         setPersons(initialPersons);
-      });
-  },[]);
+      })
+  }
+
+  useEffect(refreshPhonebook,[]);
 
   const addPerson = (e) => {
     e.preventDefault();
     const newPerson = {
       name: newName,
-      number: newNumber,
-      id: persons.length + 1
+      number: newNumber
     };
     if (!persons.filter(p => p.name === newName).length) {
       personService
@@ -35,8 +35,15 @@ const App = () => {
           setNewNumber('');
         })
     }
-    else
-      alert(`${newName} is already added to phonebook`);
+    else {
+      if (window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
+        personService
+          .update(persons.filter(p => p.name === newName)[0].id, newPerson)
+        refreshPhonebook()
+      }
+      setNewName('');
+      setNewNumber('');
+    }
   };
 
   const handlePersonChange = (e) => {
@@ -59,11 +66,7 @@ const App = () => {
     if (window.confirm(`Delete ${persons.filter(p => p.id === id)[0].name}?`)) {
       personService
         .axdelete(id)
-      personService
-        .getAll()
-        .then(initialPersons => {
-          setPersons(initialPersons);
-        })
+      refreshPhonebook()
     }
   }
 

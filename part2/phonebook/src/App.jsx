@@ -3,12 +3,14 @@ import Filter from './components/Filter';
 import PersonForm from './components/PersonForm';
 import Persons from './components/Persons';
 import personService from './services/persons';
+import Notification from './components/Notification';
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [newSearch, setNewSearch] = useState('');
+  const [notificationMessage, setNotificationMessage] = useState(null);
 
   const refreshPhonebook = () => {
     personService
@@ -19,6 +21,15 @@ const App = () => {
   }
 
   useEffect(refreshPhonebook,[]);
+
+  const personAddedNotification = (name) => {
+    setNotificationMessage(
+      `Added ${name}`
+    )
+    setTimeout(() => {
+      setNotificationMessage(null)
+    }, 5000)
+  }
 
   const addPerson = (e) => {
     e.preventDefault();
@@ -34,6 +45,7 @@ const App = () => {
           setNewName('');
           setNewNumber('');
         })
+      personAddedNotification(newName)
     }
     else {
       if (window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
@@ -73,6 +85,8 @@ const App = () => {
   return (
     <>
       <h2>Phonebook</h2>
+
+      <Notification message={notificationMessage} />
 
       <Filter
         newSearch={newSearch}

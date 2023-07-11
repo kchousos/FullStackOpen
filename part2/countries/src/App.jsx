@@ -19,7 +19,7 @@ const App = () => {
 
   return (
     <>
-      <h2>Country Information</h2>
+      <h1>Country Information</h1>
 
       <Filter
         newSearch={newSearch}

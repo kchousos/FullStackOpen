@@ -25,6 +25,7 @@ const Results = ({countries, filter}) => {
 
     return (
       <>
+        <h2>{c[0].name.common}</h2>
         <p>Capital: {c[0].capital}</p>
         <p>Area: {c[0].area}</p>
         <h3>Languages</h3>

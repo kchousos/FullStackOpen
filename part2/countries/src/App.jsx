@@ -17,6 +17,8 @@ const App = () => {
 
   const handleSearchChange = e => setNewSearch(e.target.value)
 
+  const showInfo = (name) => setNewSearch(name)
+
   return (
     <>
       <h1>Country Information</h1>
@@ -27,7 +29,7 @@ const App = () => {
 
       <h3>Results</h3>
 
-      <Results countries={countries} filter={newSearch}/>
+      <Results countries={countries} filter={newSearch} showInfo={showInfo}/>
     </>
   )
 }

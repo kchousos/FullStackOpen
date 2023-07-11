@@ -3,9 +3,10 @@ const Filter = ({newSearch, handleSearchChange}) => {
   return (
     <>
       Search countries:
-      <input type="search"
-             value={newSearch}
-             onChange={handleSearchChange}>
+      <input style={{margin: 10}}
+        type="search"
+        value={newSearch}
+        onChange={handleSearchChange}>
       </input>
     </>
   );

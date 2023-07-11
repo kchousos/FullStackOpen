@@ -1,7 +1,19 @@
-const CountryIl = ({name}) => <li>{name}</li>
+const Country = ({ c, showInfo }) => {
+
+  console.log('in country', c.name.common)
+  return (
+    <>
+      <li>
+        {c.name.common}
+        <button style={{margin: 5}}
+                onClick={() => showInfo(c.name.common)}>Show</button>
+    </li>
+    </>
+  )
+}
 const Language = ({lang}) => <li>{lang}</li>
 
-const Results = ({countries, filter}) => {
+const Results = ({countries, filter, showInfo}) => {
   
   const c = countries.filter(c => c.name.common.toLowerCase().includes(filter.toLowerCase()))
 
@@ -11,9 +23,10 @@ const Results = ({countries, filter}) => {
     return (
       <ul>
         {c.map(c =>
-          <CountryIl
+          <Country
             key={c.name.common}
-            name={c.name.common}/>)}
+            c={c}
+            showInfo={showInfo}/>)}
       </ul>
     )
 

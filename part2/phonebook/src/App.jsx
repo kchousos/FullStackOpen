@@ -23,12 +23,20 @@ const App = () => {
 
   useEffect(refreshPhonebook,[]);
 
-  const personAddedNotification = (name) => {
-    setNotificationMessage(
-      `Added ${name}`
-    )
+  const personAddedNotification = name => {
+    setNotificationMessage(`Added ${name}`)
     setTimeout(() => {
       setNotificationMessage(null)
+    }, 5000)
+  }
+
+  const errorNorification = error => {
+    console.log('------in catch------')
+    setNotificationStatus(true)
+    setNotificationMessage(`${error}`)
+    setTimeout(() => {
+      setNotificationMessage(null)
+      setNotificationStatus(false)
     }, 5000)
   }
 
@@ -45,21 +53,17 @@ const App = () => {
           setPersons(persons.concat(returnedPerson));
           setNewName('');
           setNewNumber('');
+          personAddedNotification(newName)
         })
-      personAddedNotification(newName)
+        .catch(error => errorNorification(error.response.data.error))
     }
     else {
       if (window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
         personService
           .update(persons.filter(p => p.name === newName)[0].id, newPerson)
-          .catch(() => {
-            setNotificationStatus(true)
-            setNotificationMessage(`Information of ${newName} has already been removed from server`)
-            setTimeout(() => {
-              setNotificationMessage(null)
-              setNotificationStatus(false)
-            }, 5000)
-          })
+          .catch(() =>
+            errorNorification(`Information of ${newName} has already been removed from server`)
+          )
         refreshPhonebook()
       }
       setNewName('');

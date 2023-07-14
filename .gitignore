@@ -3,3 +3,4 @@
 /*/*/.gitignore
 /part1/unicafe/public/
 /*/*/package-lock.json
+/*/*/.env

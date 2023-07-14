@@ -61,9 +61,7 @@ const App = () => {
       if (window.confirm(`${newName} is already added to the phonebook, replace the old number with a new one?`)) {
         personService
           .update(persons.filter(p => p.name === newName)[0].id, newPerson)
-          .catch(() =>
-            errorNorification(`Information of ${newName} has already been removed from server`)
-          )
+          .catch(error => errorNorification(error.response.data.error))
         refreshPhonebook()
       }
       setNewName('');

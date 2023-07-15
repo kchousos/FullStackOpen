@@ -10,16 +10,24 @@ const totalLikes = blogs => {
 }
 
 const favoriteBlog = blogs => {
-  return blogs.reduce((ablog, bblog) => {
-    ablog.likes > bblog.likes ? ablog : bblog, { likes: -1 }
-  })
+  return blogs.reduce((ablog, bblog) => ablog.likes > bblog.likes ? ablog : bblog, { likes: -1 })
 }
 
 const mostBlogs = blogs => {
   return _(blogs)
-        .groupBy('author')
-        .map((info, author) => ({ author: author, blogs: info.length }))
-        .maxBy(a => a.blogs)
+    .groupBy('author')
+    .map((info, author) => ({ author: author, blogs: info.length }))
+    .maxBy(a => a.blogs)
+}
+
+const mostLikes = blogs => {
+  return _(blogs)
+    .groupBy('author')
+    .map((info, author) => ({
+      author: author,
+      likes: _(info).sumBy('likes')
+    }))
+    .maxBy(a => a.likes)
 }
 
 module.exports = {
@@ -27,4 +35,5 @@ module.exports = {
   totalLikes,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
 }

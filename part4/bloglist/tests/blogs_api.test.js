@@ -87,6 +87,21 @@ test('Missing \'likes\' defaults to 0', async () => {
   expect(receivedBlog.likes.toString() === '0')
 })
 
+test('Blog that misses title or URL is rejected', async () => {
+  const missing = {
+    author: 'John Doe',
+    likes: 8,
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(missing)
+    .expect(400)
+
+  const response = await api.get('/api/blogs')
+  expect(response.body).toHaveLength(helper.initialBlogs.length)
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })

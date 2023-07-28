@@ -47,6 +47,28 @@ test('blogs have id', async () => {
   expect(blogs.body[0].id).toBeDefined()
 })
 
+test('Blog is successfully created by POST', async () => {
+  const newBlog = {
+    title: 'SICP in Emacs',
+    author: 'Konstantinos Chousos',
+    url: 'https://kchousos.github.io/posts/sicp-in-emacs/',
+    likes: 20,
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+
+  const titles = response.body.map(r => r.title)
+
+  expect(response.body).toHaveLength(helper.initialBlogs.length + 1)
+  expect(titles).toContain('SICP in Emacs')
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })

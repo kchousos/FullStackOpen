@@ -69,6 +69,24 @@ test('Blog is successfully created by POST', async () => {
   expect(titles).toContain('SICP in Emacs')
 })
 
+test('Missing \'likes\' defaults to 0', async () => {
+  const newBlog = {
+    title: 'How the Grinch stole the Haskell Heap',
+    author: 'Edward Z. Yang',
+    url: 'http://blog.ezyang.com/2011/04/how-the-grinch-stole-the-haskell-heap/',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+
+  const response = await api.get('/api/blogs')
+
+  const receivedBlog = response.body.find(b => b.author === 'Edward Z. Yang')
+
+  expect(receivedBlog.likes.toString() === '0')
+})
+
 afterAll(async () => {
   await mongoose.connection.close()
 })

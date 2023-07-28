@@ -19,13 +19,13 @@ beforeEach(async () => {
   BlogObject = new Blog(helper.initialBlogs[2])
   await BlogObject.save()
 
+  BlogObject = new Blog(helper.initialBlogs[3])
+  await BlogObject.save()
+
   BlogObject = new Blog(helper.initialBlogs[4])
   await BlogObject.save()
 
   BlogObject = new Blog(helper.initialBlogs[5])
-  await BlogObject.save()
-
-  BlogObject = new Blog(helper.initialBlogs[6])
   await BlogObject.save()
 })
 
@@ -40,6 +40,11 @@ test('all blogs are returned', async () => {
   const response = await api.get('/api/blogs')
 
   expect(response.body).toHaveLength(helper.initialBlogs.length)
+})
+
+test('blogs have id', async () => {
+  const blogs = await api.get('/api/blogs')
+  expect(blogs.body[0].id).toBeDefined()
 })
 
 afterAll(async () => {

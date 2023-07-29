@@ -1,17 +1,21 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
+
 const api = supertest(app)
 const Blog = require('../models/blog')
 const helper = require('./test_helper')
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  await Blog.insertMany(helper.initialBlogs)
+
+  const blogObjects = helper.initialBlogs
+        .map(blog => new Blog(blog))
+  const promiseArray = blogObjects.map(blog => blog.save())
+  await Promise.all(promiseArray)
 })
 
 describe('Initial state of database', () => {
-
   test('blogs are returned as json', async () => {
     await api
       .get('/api/blogs')
@@ -29,11 +33,9 @@ describe('Initial state of database', () => {
     const blogs = await api.get('/api/blogs')
     expect(blogs.body[0].id).toBeDefined()
   })
-
 })
 
 describe('Creation of blog', () => {
-
   test('Blog is successfully created by POST', async () => {
     const newBlog = {
       title: 'SICP in Emacs',
@@ -91,7 +93,6 @@ describe('Creation of blog', () => {
 })
 
 describe('ID operations', () => {
-
   test('delete a blog by its id', async () => {
     const blogsAtStart = await api.get('/api/blogs')
     const blogToDelete = blogsAtStart.body[0]
@@ -103,12 +104,29 @@ describe('ID operations', () => {
     const blogsAtEnd = await api.get('/api/blogs')
 
     expect(blogsAtEnd.body).toHaveLength(
-      helper.initialBlogs.length - 1
+      helper.initialBlogs.length - 1,
     )
 
     const titles = blogsAtEnd.body.map(r => r.title)
 
     expect(titles).not.toContain(blogToDelete.title)
+  })
+})
+
+describe('update a blog', () => {
+  test('update blog', async () => {
+    const blogsAtStart = await api.get('/api/blogs')
+    const blogToUpdate = blogsAtStart.body[0]
+
+    await api.put(`/api/blogs/${blogToUpdate.id}`).send({
+      ...blogToUpdate,
+      likes: blogToUpdate.likes + 1,
+    })
+      .expect(200)
+
+    const blogsAtEnd = await api.get('/api/blogs')
+    const updatedBlog = blogsAtEnd.body[0]
+    expect(updatedBlog.likes === blogToUpdate.likes + 1)
   })
 })
 

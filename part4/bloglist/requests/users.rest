@@ -6,3 +6,23 @@ Content-Type: application/json
     "name": "Superuser",
     "password": "salainen"
 }
+#
+POST http://localhost:3003/api/users
+Content-Type: application/json
+
+{
+    "username": "mluukkai",
+    "name": "Matti Luukkainen",
+    "password": "salainen"
+}
+#
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+    "title": "SICP in Emacs",
+    "author": "Konstantinos Chousos",
+    "url": "https://kchousos.github.io/posts/sicp-in-emacs/",
+    "likes": 20,
+    "userId": "64ca368fc1fab5580219e080"
+}

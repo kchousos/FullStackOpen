@@ -34,4 +34,15 @@ Content-Type: application/json
     "username": "mluukkai",
     "password": "salainen"
 }
-    
+# test authenticated post after login
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1sdXVra2FpIiwiaWQiOiI2NGNhMzY4ZmMxZmFiNTU4MDIxOWUwODAiLCJpYXQiOjE2OTA5Nzc4MTR9.pwlUJ_hszu3pT-xpljlbHNvS8YrMq_oIVSisRKCCcQw
+
+{
+    "title": "SICP in Emacs",
+    "author": "Konstantinos Chousos",
+    "url": "https://kchousos.github.io/posts/sicp-in-emacs/",
+    "likes": 20,
+    "userId": "64ca368fc1fab5580219e080"
+}

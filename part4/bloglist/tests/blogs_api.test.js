@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+const jwt = require('jsonwebtoken')
 const bcrypt = require('bcrypt')
 const app = require('../app')
 
@@ -7,6 +8,23 @@ const api = supertest(app)
 const Blog = require('../models/blog')
 const User = require('../models/user')
 const helper = require('./test_helper')
+
+let token
+
+beforeAll(async () => {
+  await User.deleteMany({})
+  const passwordHash = await bcrypt.hash('sekret', 10)
+  const user = await new User({
+    username: 'root',
+    passwordHash,
+  }).save()
+  const userForToken = {
+    username: user.username,
+    id: user._id,
+  }
+
+  token = jwt.sign(userForToken, process.env.SECRET)
+})
 
 beforeEach(async () => {
   await Blog.deleteMany({})
@@ -49,6 +67,7 @@ describe('Creation of blog', () => {
     await api
       .post('/api/blogs')
       .send(newBlog)
+      .set('Authorization', `Bearer ${token}`)
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
@@ -70,6 +89,7 @@ describe('Creation of blog', () => {
     await api
       .post('/api/blogs')
       .send(newBlog)
+      .set('Authorization', `Bearer ${token}`)
 
     const response = await api.get('/api/blogs')
 
@@ -87,6 +107,7 @@ describe('Creation of blog', () => {
     await api
       .post('/api/blogs')
       .send(missing)
+      .set('Authorization', `Bearer ${token}`)
       .expect(400)
 
     const response = await api.get('/api/blogs')
@@ -101,6 +122,7 @@ describe('ID operations', () => {
 
     await api
       .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(204)
 
     const blogsAtEnd = await api.get('/api/blogs')
@@ -226,6 +248,30 @@ describe('when there is initially one user in db', () => {
 
     const usersAtEnd = await helper.usersInDb()
     expect(usersAtEnd).toEqual(usersAtStart)
+  })
+})
+
+describe('Bad token', () => {
+  test('Adding a blog fails with status code 401 if token not provided', async () => {
+    const newBlog = {
+      title: 'SICP in Emacs',
+      author: 'Konstantinos Chousos',
+      url: 'https://kchousos.github.io/posts/sicp-in-emacs/',
+      likes: 20,
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .set('Authorization', 'Bearer ')
+      .expect(401)
+
+    const response = await api.get('/api/blogs')
+
+    const titles = response.body.map(r => r.title)
+
+    expect(response.body).toHaveLength(helper.initialBlogs.length)
+    expect(titles).not.toContain('SICP in Emacs')
   })
 })
 

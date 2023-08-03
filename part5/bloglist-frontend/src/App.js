@@ -2,12 +2,15 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import Notification from './components/Notification'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
+  const [message, setMessage] = useState(null)
+  const [isError, setError] = useState(0)
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('') 
@@ -38,15 +41,25 @@ const App = () => {
       setUser(user)
       setUsername('')
       setPassword('')
+      setMessage('Succesfully logged in!')
+      setTimeout(() => { setMessage(null) }, 5000)
     } catch (exception) {
-      // setErrorMessage('Wrong credentials')
-      // setTimeout(() => { setErrorMessage(null) }, 5000)
+      setMessage('Wrong credentials')
+      setError(1)
+      setTimeout(() => {
+        setMessage(null)
+        setError(0)
+      }, 5000)
+      setUsername('')
+      setPassword('')
     }
   }
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedUser')
     setUser(null)
+    setMessage('Succesfully logged out!')
+    setTimeout(() => { setMessage(null) }, 5000)
   }
 
   const addBlog = (event) => {
@@ -57,6 +70,8 @@ const App = () => {
       .create(blogObject)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
+        setMessage(`Succesfully Added "${title}" by ${author}!`)
+        setTimeout(() => { setMessage(null) }, 5000)
         setTitle('')
         setAuthor('')
         setUrl('')
@@ -94,6 +109,7 @@ const App = () => {
   if (user === null) {
     return (
       <>
+        <Notification message={message} error={isError}/>
         <h2>Log in to application</h2>
         <form onSubmit={handleLogin}>
           <div>
@@ -122,6 +138,7 @@ const App = () => {
 
   return (
     <>
+      <Notification message={message} error={isError}/>
       <p>{user.name} logged in</p>
       <button
         onClick={handleLogout}>

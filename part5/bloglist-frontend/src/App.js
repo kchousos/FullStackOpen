@@ -3,6 +3,7 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -15,6 +16,8 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
+
+  const [blogFormVisible, setBlogFormVisible] = useState(false)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -75,36 +78,34 @@ const App = () => {
         setTitle('')
         setAuthor('')
         setUrl('')
+        setBlogFormVisible(false)
       })
   }
 
-  const handleTitleChange = e => setTitle(e.target.value)
-  const handleAuthorChange = e => setAuthor(e.target.value)
-  const handleUrlChange = e => setUrl(e.target.value)
+  const blogForm = () => {
+    const hideWhenVisible = { display: blogFormVisible ? 'none' : '' }
+    const showWhenVisible = { display: blogFormVisible ? '' : 'none' }
 
-  const blogForm = () => (
-    <form onSubmit={addBlog}>
-      title:
-      <input
-        value={title}
-        onChange={handleTitleChange}
-      />
-      <br/>
-      author:
-      <input
-        value={author}
-        onChange={handleAuthorChange}
-      />
-      <br/>
-      url:
-      <input
-        value={url}
-        onChange={handleUrlChange}
-      />
-      <br/>
-      <button type="submit">save</button>
-    </form>  
-  )
+    return (
+      <div>
+        <div style={hideWhenVisible}>
+          <button onClick={() => setBlogFormVisible(true)}>create blog</button>
+        </div>
+        <div style={showWhenVisible}>
+          <BlogForm
+            title={title}
+            author={author}
+            url={url}
+            handleTitleChange={({ target }) => setTitle(target.value)}
+            handleAuthorChange={({ target }) => setAuthor(target.value)}
+            handleUrlChange={({ target }) => setUrl(target.value)}
+            addBlog={addBlog}
+          />
+          <button onClick={() => setBlogFormVisible(false)}>cancel</button>
+        </div>
+      </div>
+    )
+  }
 
   if (user === null) {
     return (
@@ -139,11 +140,13 @@ const App = () => {
   return (
     <>
       <Notification message={message} error={isError}/>
-      <p>{user.name} logged in</p>
-      <button
-        onClick={handleLogout}>
-        logout
-      </button>
+      <p>
+        {user.name} logged in
+        <button
+          onClick={handleLogout}>
+          logout
+        </button>
+      </p>
       <h2>blogs</h2>
       {blogForm()}
       {blogs.map(blog =>

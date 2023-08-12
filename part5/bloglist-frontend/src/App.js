@@ -1,15 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Notification from './components/Notification'
 import BlogForm from './components/BlogForm'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [message, setMessage] = useState(null)
   const [isError, setError] = useState(0)
 
@@ -17,7 +15,7 @@ const App = () => {
   const [password, setPassword] = useState('') 
   const [user, setUser] = useState(null)
 
-  const [blogFormVisible, setBlogFormVisible] = useState(false)
+    const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -65,46 +63,15 @@ const App = () => {
     setTimeout(() => { setMessage(null) }, 5000)
   }
 
-  const addBlog = (event) => {
-    event.preventDefault()
-    const blogObject = { title, author, url }
-
+  const addBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility()    
     blogService
       .create(blogObject)
       .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
-        setMessage(`Succesfully Added "${title}" by ${author}!`)
+        setMessage(`Succesfully Added "${blogObject.title}" by ${blogObject.author}!`)
         setTimeout(() => { setMessage(null) }, 5000)
-        setTitle('')
-        setAuthor('')
-        setUrl('')
-        setBlogFormVisible(false)
       })
-  }
-
-  const blogForm = () => {
-    const hideWhenVisible = { display: blogFormVisible ? 'none' : '' }
-    const showWhenVisible = { display: blogFormVisible ? '' : 'none' }
-
-    return (
-      <div>
-        <div style={hideWhenVisible}>
-          <button onClick={() => setBlogFormVisible(true)}>create blog</button>
-        </div>
-        <div style={showWhenVisible}>
-          <BlogForm
-            title={title}
-            author={author}
-            url={url}
-            handleTitleChange={({ target }) => setTitle(target.value)}
-            handleAuthorChange={({ target }) => setAuthor(target.value)}
-            handleUrlChange={({ target }) => setUrl(target.value)}
-            addBlog={addBlog}
-          />
-          <button onClick={() => setBlogFormVisible(false)}>cancel</button>
-        </div>
-      </div>
-    )
   }
 
   if (user === null) {
@@ -148,7 +115,9 @@ const App = () => {
         </button>
       </p>
       <h2>blogs</h2>
-      {blogForm()}
+      <Togglable buttonLabel="create blog" ref={blogFormRef}>
+        <BlogForm createBlog={addBlog}/>
+      </Togglable>
       {blogs.map(blog =>
         <Blog key={blog.id} blog={blog} />
       )}

@@ -19,7 +19,7 @@ const App = () => {
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
-      setBlogs( blogs )
+      setBlogs(blogs.sort((a, b) => b.likes - a.likes))
     )  
   }, [])
 
@@ -68,7 +68,7 @@ const App = () => {
     blogService
       .create(blogObject)
       .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
+        setBlogs(blogs.concat(returnedBlog).sort((a, b) => b.likes - a.likes))
         setMessage(`Succesfully Added "${blogObject.title}" by ${blogObject.author}!`)
         setTimeout(() => { setMessage(null) }, 5000)
       })
@@ -76,7 +76,7 @@ const App = () => {
 
   const handleLikes = async (blog) => {
     const newBlog = await blogService.update(blog.id, { ...blog, likes: blog.likes + 1 })
-    setBlogs(blogs.map(b => b.id === blog.id ? { ...b, ...newBlog } : b))
+    setBlogs(blogs.map(b => b.id === blog.id ? { ...b, ...newBlog } : b).sort((a, b) => b.likes - a.likes))
   }
 
   if (user === null) {

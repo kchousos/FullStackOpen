@@ -4,10 +4,13 @@ const Blog = ({ blog }) => {
   const [info, setInfo] = useState(false)
 
   const blogStyle = {
-    paddingTop: 5,
-    paddingLeft: 2,
+    paddingTop: 2,
+    paddingLeft: 10,
+    paddingBottom: 2,
     // border: 'solid',
     // borderWidth: 1,
+    background: '#fff8dc',
+    borderRadius: 10,
     marginBottom: 5
   }
 

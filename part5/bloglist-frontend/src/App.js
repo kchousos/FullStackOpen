@@ -12,15 +12,15 @@ const App = () => {
   const [isError, setError] = useState(0)
 
   const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('') 
+  const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-    const blogFormRef = useRef()
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs(blogs.sort((a, b) => b.likes - a.likes))
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -37,7 +37,7 @@ const App = () => {
     try {
       const user = await loginService.login({ username, password })
 
-      window.localStorage.setItem('loggedUser', JSON.stringify(user)) 
+      window.localStorage.setItem('loggedUser', JSON.stringify(user))
       blogService.setToken(user.token)
       setUser(user)
       setUsername('')
@@ -64,7 +64,7 @@ const App = () => {
   }
 
   const addBlog = (blogObject) => {
-    blogFormRef.current.toggleVisibility()    
+    blogFormRef.current.toggleVisibility()
     blogService
       .create(blogObject)
       .then(returnedBlog => {
@@ -79,10 +79,17 @@ const App = () => {
     setBlogs(blogs.map(b => b.id === blog.id ? { ...b, ...newBlog } : b).sort((a, b) => b.likes - a.likes))
   }
 
+  const handleDelete = async (blog) => {
+    if (window.confirm(`Really remove blog "${blog.title}" by ${blog.author}?`)) {
+      await blogService.remove(blog.id)
+      setBlogs(blogs.filter(b => b.id !== blog.id).sort((a, b) => b.likes - a.likes))
+    }
+  }
+
   if (user === null) {
     return (
       <>
-        <Notification message={message} error={isError}/>
+        <Notification message={message} error={isError} />
         <h2>Log in to application</h2>
         <form onSubmit={handleLogin}>
           <div>
@@ -111,7 +118,7 @@ const App = () => {
 
   return (
     <>
-      <Notification message={message} error={isError}/>
+      <Notification message={message} error={isError} />
       <p>
         {user.name} logged in
         <button
@@ -121,11 +128,17 @@ const App = () => {
       </p>
       <h2>blogs</h2>
       <Togglable buttonLabel="create blog" ref={blogFormRef}>
-        <BlogForm createBlog={addBlog}/>
+        <BlogForm createBlog={addBlog} />
       </Togglable>
-      <r/>
+      <r />
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} handleLikes={handleLikes}/>
+        <Blog
+          key={blog.id}
+          blog={blog}
+          handleLikes={handleLikes}
+
+          canDelete={blog.user && blog.user.username === user.username}
+          handleDelete={handleDelete} />
       )}
     </>
   )

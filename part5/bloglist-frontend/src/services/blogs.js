@@ -1,3 +1,4 @@
+import { computeHeadingLevel } from '@testing-library/react'
 import axios from 'axios'
 const baseUrl = '/api/blogs'
 
@@ -22,5 +23,10 @@ const update = async (id, updatedBlog) => {
   return response.data
 }
 
+const remove = async (id) => {
+  const config = { headers: { Authorization: token } }
+  await axios.delete(`${baseUrl}/${id}`, config)
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
-export default { getAll, create, setToken, update }
+export default { getAll, create, setToken, update, remove }
